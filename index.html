@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>서울 3D 인터랙티브 맵</title>
+    <meta name="description" content="MapLibre GL + OpenFreeMap으로 만든 서울 3D 인터랙티브 맵 — 랜드마크 투어, 궤도 카메라, 낮/밤 모드" />
+  </head>
+  <body>
+    <div id="map"></div>
+
+    <aside id="panel">
+      <header class="panel-header">
+        <h1>SEOUL<span class="accent">3D</span></h1>
+        <p class="tagline">서울 3D 인터랙티브 맵</p>
+      </header>
+
+      <section class="panel-section">
+        <h2>랜드마크 투어</h2>
+        <ul id="landmark-list"></ul>
+      </section>
+
+      <section class="panel-section">
+        <h2>카메라</h2>
+        <div class="btn-group" id="camera-controls">
+          <button data-mode="free" class="active">자유</button>
+          <button data-mode="orbit">궤도</button>
+          <button data-mode="top">탑다운</button>
+        </div>
+      </section>
+
+      <section class="panel-section">
+        <h2>시간대</h2>
+        <div class="btn-group" id="theme-controls">
+          <button data-theme="day" class="active">☀️ 낮</button>
+          <button data-theme="night">🌙 밤</button>
+        </div>
+      </section>
+
+      <footer class="panel-footer">
+        <a href="https://openfreemap.org" target="_blank" rel="noopener">OpenFreeMap</a> ·
+        <a href="https://maplibre.org" target="_blank" rel="noopener">MapLibre</a> ·
+        © OpenStreetMap
+      </footer>
+    </aside>
+
+    <div id="info-card" class="hidden">
+      <button id="card-close" aria-label="닫기">×</button>
+      <h3 id="card-title"></h3>
+      <div id="card-chips"></div>
+      <p id="card-desc"></p>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
