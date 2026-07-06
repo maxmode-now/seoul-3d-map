@@ -1,7 +1,7 @@
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './style.css';
-import { LANDMARKS, INITIAL_VIEW } from './landmarks.js';
+import { CITIES, DEFAULT_CITY } from './cities.js';
 
 const STYLES = {
   day: 'https://tiles.openfreemap.org/styles/liberty',
@@ -29,14 +29,17 @@ const BUILDING_PAINT = {
   ],
 };
 
+const params = new URLSearchParams(window.location.search);
+let cityId = CITIES[params.get('city')] ? params.get('city') : DEFAULT_CITY;
 let theme = 'day';
 let cameraMode = 'free';
 let orbitFrame = null;
+let markers = [];
 
 const map = new maplibregl.Map({
   container: 'map',
   style: STYLES.day,
-  ...INITIAL_VIEW,
+  ...CITIES[cityId].view,
   maxPitch: 75,
   canvasContextAttributes: { antialias: true },
 });
@@ -141,10 +144,12 @@ function showCard(lm) {
   cardEl.classList.remove('hidden');
 }
 
-document.getElementById('card-close').addEventListener('click', () => {
+function hideCard() {
   cardEl.classList.add('hidden');
   setActiveLandmark(null);
-});
+}
+
+document.getElementById('card-close').addEventListener('click', hideCard);
 
 function setActiveLandmark(id) {
   for (const li of listEl.children) {
@@ -166,21 +171,65 @@ function flyToLandmark(lm) {
   setActiveLandmark(lm.id);
 }
 
-for (const lm of LANDMARKS) {
-  const li = document.createElement('li');
-  li.dataset.id = lm.id;
-  li.innerHTML = `<span class="dot"></span>${lm.name}`;
-  li.addEventListener('click', () => flyToLandmark(lm));
-  listEl.appendChild(li);
+function renderLandmarks(city) {
+  listEl.innerHTML = '';
+  for (const marker of markers) marker.remove();
+  markers = [];
 
-  const markerEl = document.createElement('div');
-  markerEl.className = 'lm-marker';
-  markerEl.title = lm.name;
-  markerEl.addEventListener('click', () => flyToLandmark(lm));
-  new maplibregl.Marker({ element: markerEl, anchor: 'center' })
-    .setLngLat(lm.coords)
-    .addTo(map);
+  for (const lm of city.landmarks) {
+    const li = document.createElement('li');
+    li.dataset.id = lm.id;
+    li.innerHTML = `<span class="dot"></span>${lm.name}`;
+    li.addEventListener('click', () => flyToLandmark(lm));
+    listEl.appendChild(li);
+
+    const markerEl = document.createElement('div');
+    markerEl.className = 'lm-marker';
+    markerEl.title = lm.name;
+    markerEl.addEventListener('click', () => flyToLandmark(lm));
+    markers.push(
+      new maplibregl.Marker({ element: markerEl, anchor: 'center' })
+        .setLngLat(lm.coords)
+        .addTo(map)
+    );
+  }
 }
+
+// ---------------------------------------------------------------- City switching
+
+const brandEl = document.getElementById('brand');
+const taglineEl = document.getElementById('tagline');
+const cityButtons = document.querySelectorAll('#city-controls button');
+
+function setCity(id, { fly = true } = {}) {
+  cityId = id;
+  const city = CITIES[id];
+
+  cityButtons.forEach((b) => b.classList.toggle('active', b.dataset.city === id));
+  brandEl.innerHTML = `${city.label}<span class="accent">3D</span>`;
+  taglineEl.textContent = city.tagline;
+  document.title = `${city.name} 3D — Interactive 3D City Map`;
+
+  // Shareable deep link (?city=nyc); default city keeps a clean URL
+  const url = new URL(window.location);
+  if (id === DEFAULT_CITY) url.searchParams.delete('city');
+  else url.searchParams.set('city', id);
+  history.replaceState(null, '', url);
+
+  renderLandmarks(city);
+  hideCard();
+  stopOrbit();
+  setCameraMode('free');
+  if (fly) map.flyTo({ ...city.view, maxDuration: 6000, essential: true });
+}
+
+cityButtons.forEach((btn) => {
+  btn.addEventListener('click', () => {
+    if (btn.dataset.city !== cityId) setCity(btn.dataset.city);
+  });
+});
+
+setCity(cityId, { fly: false });
 
 // ---------------------------------------------------------------- Camera modes
 

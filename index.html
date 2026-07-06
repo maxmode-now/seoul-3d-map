@@ -3,17 +3,25 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Seoul 3D — Interactive 3D Map of Seoul</title>
-    <meta name="description" content="An interactive 3D map of Seoul built with MapLibre GL and OpenFreeMap — landmark tours, orbit camera, and day/night modes" />
+    <title>City 3D — Seoul · New York in 3D</title>
+    <meta name="description" content="Interactive 3D city maps of Seoul and New York built with MapLibre GL and OpenFreeMap — landmark tours, orbit camera, day/night modes, no API keys" />
   </head>
   <body>
     <div id="map"></div>
 
     <aside id="panel">
       <header class="panel-header">
-        <h1>SEOUL<span class="accent">3D</span></h1>
-        <p class="tagline">Interactive 3D Map of Seoul</p>
+        <h1 id="brand"></h1>
+        <p class="tagline" id="tagline"></p>
       </header>
+
+      <section class="panel-section">
+        <h2>City</h2>
+        <div class="btn-group" id="city-controls">
+          <button data-city="seoul">Seoul</button>
+          <button data-city="nyc">New York</button>
+        </div>
+      </section>
 
       <section class="panel-section">
         <h2>Landmark Tour</h2>
