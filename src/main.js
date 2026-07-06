@@ -93,8 +93,29 @@ function addBuildingLayer() {
   );
 }
 
+// Force English-only labels: rewrite every name-based symbol layer to prefer
+// the Latin name. Layers labeled by other fields (road refs, house numbers)
+// are left untouched.
+function applyEnglishLabels() {
+  const LATIN_NAME = [
+    'coalesce',
+    ['get', 'name:latin'],
+    ['get', 'name_en'],
+    ['get', 'name'],
+  ];
+  for (const layer of map.getStyle().layers) {
+    if (layer.type !== 'symbol') continue;
+    const field = layer.layout?.['text-field'];
+    if (!field || !JSON.stringify(field).includes('name')) continue;
+    map.setLayoutProperty(layer.id, 'text-field', LATIN_NAME);
+  }
+}
+
 // Fires on initial load and after every setStyle
-map.on('style.load', addBuildingLayer);
+map.on('style.load', () => {
+  addBuildingLayer();
+  applyEnglishLabels();
+});
 
 // ---------------------------------------------------------------- Landmarks
 
