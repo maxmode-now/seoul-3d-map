@@ -3,8 +3,7 @@
 An **API-key-free** interactive 3D map of Seoul, built with MapLibre GL JS and OpenFreeMap.
 It extrudes OSM building heights into a 3D cityscape with cinematic landmark tours and day/night modes.
 
-<!-- Screenshot: run locally, capture your favorite angle, and save it as docs/screenshot.png -->
-<!-- ![Seoul 3D](docs/screenshot.png) -->
+![Seoul 3D](docs/screenshot.png)
 
 ## ✨ Features
 
